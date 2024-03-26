@@ -1,0 +1,2 @@
+// List out all documents with the prefix Holberton
+db.school.find({name: /Holberton.*/}).forEach(printjson);
