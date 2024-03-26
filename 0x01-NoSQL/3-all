@@ -1,2 +1,2 @@
 //list all documents
-my_db.school.find().foreach(printjson);
+db.school.find().forEach(printjson);
