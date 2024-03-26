@@ -1,2 +1,2 @@
 // list all by name filter
-db.school.find({name:"Holberton school"}).forEach(printJson)
+db.school.find({name:"Holberton school"}).forEach(printJson);
