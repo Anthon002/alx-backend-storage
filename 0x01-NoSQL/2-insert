@@ -1,2 +1,2 @@
 //insert into school
-my_db.school.insertOne({name:"Holberton school"});
+my_db.school.insert({name:"Holberton school"});
