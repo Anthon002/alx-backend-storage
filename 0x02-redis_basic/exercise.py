@@ -2,9 +2,9 @@
 ''' module for using redis
 '''
 import redis
-import uuid
-from functools import wraps
 from typing import Callable, Union, Any
+from functools import wraps
+import uuid
 
 
 def count_calls(method: Callable) -> Callable:
@@ -22,43 +22,43 @@ def count_calls(method: Callable) -> Callable:
 
 
 def call_history(method: Callable) -> Callable:
-    '''Tracks the call details of a method in a Cache class.
+    '''method to keep track of details of calls for a method 
     '''
     @wraps(method)
     def invoker(self, *args, **kwargs) -> Any:
-        '''Returns the method's output after storing its inputs and output.
+        '''method to return the output
         '''
-        in_key = '{}:inputs'.format(method.__qualname__)
-        out_key = '{}:outputs'.format(method.__qualname__)
+        _key_in_ = '{}:inputs'.format(method.__qualname__)
+        _key_out_ = '{}:outputs'.format(method.__qualname__)
         if isinstance(self._redis, redis.Redis):
-            self._redis.rpush(in_key, str(args))
+            self._redis.rpush(_key_in_, str(args))
         output = method(self, *args, **kwargs)
         if isinstance(self._redis, redis.Redis):
-            self._redis.rpush(out_key, output)
+            self._redis.rpush(_key_out_, output)
         return output
     return invoker
 
 
 def replay(fn: Callable) -> None:
-    '''Displays the call history of a Cache class' method.
+    '''method to display call history 
     '''
     if fn is None or not hasattr(fn, '__self__'):
         return
-    redis_store = getattr(fn.__self__, '_redis', None)
-    if not isinstance(redis_store, redis.Redis):
+    _store_redis = getattr(fn.__self__, '_redis', None)
+    if not isinstance(_store_redis, redis.Redis):
         return
-    fxn_name = fn.__qualname__
-    in_key = '{}:inputs'.format(fxn_name)
-    out_key = '{}:outputs'.format(fxn_name)
+    _name_func = fn.__qualname__
+    _key_in_ = '{}:inputs'.format(_name_func)
+    _key_out_ = '{}:outputs'.format(_name_func)
     fxn_call_count = 0
-    if redis_store.exists(fxn_name) != 0:
-        fxn_call_count = int(redis_store.get(fxn_name))
-    print('{} was called {} times:'.format(fxn_name, fxn_call_count))
-    fxn_inputs = redis_store.lrange(in_key, 0, -1)
-    fxn_outputs = redis_store.lrange(out_key, 0, -1)
-    for fxn_input, fxn_output in zip(fxn_inputs, fxn_outputs):
+    if _store_redis.exists(_name_func) != 0:
+        fxn_call_count = int(_store_redis.get(_name_func))
+    print('{} was called {} times:'.format(_name_func, fxn_call_count))
+    _input_func = _store_redis.lrange(_key_in_, 0, -1)
+    _output_func = _store_redis.lrange(_key_out_, 0, -1)
+    for fxn_input, fxn_output in zip(_input_func, _output_func):
         print('{}(*{}) -> {}'.format(
-            fxn_name,
+            _name_func,
             fxn_input.decode("utf-8"),
             fxn_output,
         ))
@@ -90,7 +90,8 @@ class Cache:
         '''method to retrieve a value from the redis storage
         '''
         data = self._redis.get(key)
-        return fn(data) if fn is not None else data
+        _a = fn(data) if fn is not None else data
+        return _a
 
     def get_str(self, key: str) -> str:
         '''method to retrieve str value from redis storage
